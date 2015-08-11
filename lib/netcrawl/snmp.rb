@@ -12,7 +12,8 @@ class NetCrawl
     # @param [String] oid to get
     # @return [SNMP::VarBind]
     def get oid
-      mget([oid]).first
+      #mget([oid]).first
+      snmp :get_value, oid 
     end
 
     # Get multiple oids, return array of values

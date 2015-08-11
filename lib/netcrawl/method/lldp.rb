@@ -13,7 +13,7 @@ class NetCrawl
       #   .1.0.8802.1.1.2.1.4.2.1.3.0.257.1.1.4.62.243.146.245
       #   (1.4 is IPv4)
       #  as well LocPortId/RemPortId is hard, it is 'local' (snmpifindex really) in JunOS, but ifName in IOS
-      :lldpLocPortId           => '1.0.8802.1.1.2.1.3.7.1.3',
+      :lldpLocPortId           => '1.0.8802.1.1.2.1.3.7.1.4',
       :lldpRemChassisIdSubtype => '1.0.8802.1.1.2.1.4.1.1.4', # CSCO and JNPR use 4 (MAC address) rendering ChassisID useless
       :lldpRemChassisId        => '1.0.8802.1.1.2.1.4.1.1.5',
       :lldpRemPortIdSubtype    => '1.0.8802.1.1.2.1.4.1.1.6',
@@ -43,7 +43,8 @@ class NetCrawl
         if @mib[OID[:lldpRemPortIdSubtype], peer_id].value.to_i == PortSubType[:mac_address]
           peer.dst    = peer.dst.each_char.map{|e|"%02x" % e.ord}.join.scan(/..../).join('.')
         end
-        peer.src      = get(OID[:lldpLocPortId] + "." + peer_id[1]).value rescue nil
+        port_oid = OID[:lldpLocPortId] + "." + peer_id[1].to_s
+        peer.src      = @snmp.get(port_oid) rescue nil
         peers << peer
       end
       peers
