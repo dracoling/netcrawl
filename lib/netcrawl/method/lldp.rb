@@ -1,6 +1,6 @@
 class NetCrawl
   class LLDP < XDP
-    MIB = '1.0.8802.1.1.2' # lldpMIB
+    MIB = '1.0.8802.1.1.2.1.4' # lldpMIB
     OID = {
       # http://standards.ieee.org/getieee802/download/802.1AB-2009.pdf
       # finding IP address for LLDP neighbour as of JunOS 13.3R1 and IOS 15.0(2)SG8 is not practical
@@ -43,7 +43,7 @@ class NetCrawl
         if @mib[OID[:lldpRemPortIdSubtype], peer_id].value.to_i == PortSubType[:mac_address]
           peer.dst    = peer.dst.each_char.map{|e|"%02x" % e.ord}.join.scan(/..../).join('.')
         end
-        peer.src      = @mib[OID[:lldpLocPortId], peer_id[1]].value rescue nil
+        peer.src      = get(OID[:lldpLocPortId] + "." + peer_id[1]).value rescue nil
         peers << peer
       end
       peers
